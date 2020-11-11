@@ -7,6 +7,7 @@ pub struct Input {
     pub f: i32,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum HValue {
     M,
     P,

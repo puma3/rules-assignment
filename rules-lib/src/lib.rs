@@ -1,3 +1,4 @@
+mod errors;
 mod rules;
 mod types;
 
