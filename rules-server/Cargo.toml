@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 rocket = "0.4.6"
+rocket_cors = "0.5.2"
 rules = { path = "../rules-lib" }
 
 [dependencies.rocket_contrib]

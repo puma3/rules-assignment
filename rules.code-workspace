@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "rules-server"
+	},
+	{
+		"path": "rules-lib"
+	},
+	{
+		"path": "rules-client"
+	}
+],
+  "settings": {}
+}
