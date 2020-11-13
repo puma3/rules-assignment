@@ -117,18 +117,180 @@ mod tests {
             base_k_value(&HValue::T, 12.25, 3, 10),
             12.25 - (12.25 / 3.0)
         );
+    }
 
-        // assert_eq!(
-        //     base_k_value(&HValue::M, 9999999.999999, 99999999, 99999),
+    #[test]
+    fn test_custom_1_k_value() {
+        assert_eq!(custom_1_k_value(&HValue::M, 0.0, 0, 0), None);
+        assert_eq!(custom_1_k_value(&HValue::P, 0.0, 0, 0), Some(0.0));
+        assert_eq!(custom_1_k_value(&HValue::T, 0.0, 0, 0), None);
 
-        // );
-        // assert_eq!(
-        //     base_k_value(&HValue::P, 9999999.999999, 99999999, 99999),
-        //     15.925
-        // );
-        // assert_eq!(
-        //     base_k_value(&HValue::T, 9999999.999999, 99999999, 99999),
-        //     15.925
-        // );
+        assert_eq!(custom_1_k_value(&HValue::M, 1.0, 1, 1), None);
+        assert_eq!(custom_1_k_value(&HValue::P, 1.0, 1, 1), Some(2.01));
+        assert_eq!(custom_1_k_value(&HValue::T, 1.0, 1, 1), None);
+
+        assert_eq!(custom_1_k_value(&HValue::M, -10.0, -4, -1), None);
+        assert_eq!(custom_1_k_value(&HValue::P, -10.0, -4, -1), Some(-19.6));
+        assert_eq!(custom_1_k_value(&HValue::T, -10.0, -4, -1), None);
+
+        assert_eq!(custom_1_k_value(&HValue::M, 12.25, 3, 10), None);
+        assert_eq!(custom_1_k_value(&HValue::P, 12.25, 3, 10), Some(24.8675));
+        assert_eq!(custom_1_k_value(&HValue::T, 12.25, 3, 10), None);
+    }
+
+    #[test]
+    fn test_custom_2_h_value() {
+        assert_eq!(custom_2_h_value(true, true, false), Some(HValue::T));
+        assert_eq!(custom_2_h_value(true, false, true), Some(HValue::M));
+        assert_eq!(custom_2_h_value(true, true, true), None);
+        assert_eq!(custom_2_h_value(false, true, true), None);
+        assert_eq!(custom_2_h_value(true, false, false), None);
+        assert_eq!(custom_2_h_value(false, false, true), None);
+        assert_eq!(custom_2_h_value(false, true, false), None);
+        assert_eq!(custom_2_h_value(false, false, true), None);
+        assert_eq!(custom_2_h_value(false, false, false), None);
+    }
+
+    #[test]
+    fn test_custom_2_k_value() {
+        assert_eq!(custom_2_k_value(&HValue::M, 0.0, 0, 0), Some(0.0));
+        assert_eq!(custom_2_k_value(&HValue::P, 0.0, 0, 0), None);
+        assert_eq!(custom_2_k_value(&HValue::T, 0.0, 0, 0), None);
+
+        assert_eq!(custom_2_k_value(&HValue::M, 1.0, 1, 1), Some(2.01));
+        assert_eq!(custom_2_k_value(&HValue::P, 1.0, 1, 1), None);
+        assert_eq!(custom_2_k_value(&HValue::T, 1.0, 1, 1), None);
+
+        assert_eq!(custom_2_k_value(&HValue::M, -10.0, -4, -1), Some(-10.6));
+        assert_eq!(custom_2_k_value(&HValue::P, -10.0, -4, -1), None);
+        assert_eq!(custom_2_k_value(&HValue::T, -10.0, -4, -1), None);
+
+        assert_eq!(custom_2_k_value(&HValue::M, 12.25, 3, 10), Some(22.6175));
+        assert_eq!(custom_2_k_value(&HValue::P, 12.25, 3, 10), None);
+        assert_eq!(custom_2_k_value(&HValue::T, 12.25, 3, 10), None);
+    }
+
+    #[test]
+    fn test_result() {
+        let d = 1.0 / 3.0;
+        let e = 13;
+        let f = 19;
+
+        // H: Custom 2, K: Base
+        assert_eq!(
+            result(Input {
+                a: true,
+                b: true,
+                c: false,
+                d,
+                e,
+                f
+            }),
+            Ok(Output {
+                h: HValue::T,
+                k: 1.0 / 3.0 - (19.0 / 90.0)
+            })
+        );
+        // H: Custom 2, K: Custom 2
+        assert_eq!(
+            result(Input {
+                a: true,
+                b: false,
+                c: true,
+                d,
+                e,
+                f
+            }),
+            Ok(Output {
+                h: HValue::M,
+                k: 19.0 + 1.0 / 3.0 + 13.0 / 300.0
+            })
+        );
+        // H: Base, K: Custom 1
+        assert_eq!(
+            result(Input {
+                a: true,
+                b: true,
+                c: true,
+                d,
+                e,
+                f
+            }),
+            Ok(Output {
+                h: HValue::P,
+                k: 2.0 / 3.0 + (13.0 / 300.0)
+            })
+        );
+        // H: Base, K: Base
+        assert_eq!(
+            result(Input {
+                a: false,
+                b: true,
+                c: true,
+                d,
+                e,
+                f
+            }),
+            Ok(Output {
+                h: HValue::T,
+                k: 1.0 / 3.0 - 19.0 / 90.0
+            })
+        );
+        // [Error]
+        assert_eq!(
+            result(Input {
+                a: true,
+                b: false,
+                c: false,
+                d,
+                e,
+                f
+            }),
+            Err(errors::INVALID_INPUT)
+        );
+        assert_eq!(
+            result(Input {
+                a: false,
+                b: false,
+                c: true,
+                d,
+                e,
+                f
+            }),
+            Err(errors::INVALID_INPUT)
+        );
+        assert_eq!(
+            result(Input {
+                a: false,
+                b: true,
+                c: false,
+                d,
+                e,
+                f
+            }),
+            Err(errors::INVALID_INPUT)
+        );
+        assert_eq!(
+            result(Input {
+                a: false,
+                b: false,
+                c: true,
+                d,
+                e,
+                f
+            }),
+            Err(errors::INVALID_INPUT)
+        );
+        assert_eq!(
+            result(Input {
+                a: false,
+                b: false,
+                c: false,
+                d,
+                e,
+                f
+            }),
+            Err(errors::INVALID_INPUT)
+        );
     }
 }

@@ -14,6 +14,7 @@ pub enum HValue {
     T,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Output {
     pub h: HValue,
     pub k: f32,
