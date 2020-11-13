@@ -22,9 +22,48 @@ fn base_k_value(h: &HValue, d: f32, e: i32, f: i32) -> f32 {
     }
 }
 
+fn custom_1_k_value(h: &HValue, d: f32, e: i32, _f: i32) -> Option<f32> {
+    match *h {
+        HValue::P => Some(2.0 * d + (d * (e as f32) / 100.0)),
+        _ => None,
+    }
+}
+
+fn custom_2_h_value(a: bool, b: bool, c: bool) -> Option<HValue> {
+    if a && b && !c {
+        Some(HValue::T)
+    } else if a && !b && c {
+        Some(HValue::M)
+    } else {
+        None
+    }
+}
+
+fn custom_2_k_value(h: &HValue, d: f32, e: i32, f: i32) -> Option<f32> {
+    match *h {
+        HValue::M => Some(f as f32 + d + (d * (e as f32) / 100.0)),
+        _ => None,
+    }
+}
+
 pub fn result(input: Input) -> Result<Output, &'static str> {
-    let h_value = base_h_value(input.a, input.b, input.c)?;
-    let k_value = base_k_value(&h_value, input.d, input.e, input.f);
+    // Custom 2 has higher priority than base rules to retrieve H value
+    let h_value = if let Some(custom_2_h_value) = custom_2_h_value(input.a, input.b, input.c) {
+        custom_2_h_value
+    } else {
+        base_h_value(input.a, input.b, input.c)?
+    };
+
+    // Calls to functions to get K value are performed priority-wise
+    let k_value = if let Some(custom_2_k_value) =
+        custom_2_k_value(&h_value, input.d, input.e, input.f)
+    {
+        custom_2_k_value
+    } else if let Some(custom_1_k_value) = custom_1_k_value(&h_value, input.d, input.e, input.f) {
+        custom_1_k_value
+    } else {
+        base_k_value(&h_value, input.d, input.e, input.f)
+    };
 
     Ok(Output {
         h: h_value,

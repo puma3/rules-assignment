@@ -49,7 +49,6 @@ const Inputs = ({ getResult }) => {
   const [fValue, setFValue] = useState(0);
 
   const setFloatValue = useCallback((input, setter) => {
-    console.log("input", input);
     if (isValidFloatInput(input) && setter) setter(input || 0);
   }, []);
 
