@@ -1,4 +1,3 @@
-// use std::io;
 use crate::errors;
 use crate::types::*;
 
@@ -100,23 +99,6 @@ mod tests {
         assert_eq!(base_k_value(&HValue::M, 1.0, 1, 1), 1.1);
         assert_eq!(base_k_value(&HValue::P, 1.0, 1, 1), 1.0);
         assert_eq!(base_k_value(&HValue::T, 1.0, 1, 1), 1.0 - (1.0 / 30.0));
-
-        assert_eq!(base_k_value(&HValue::M, -10.0, -4, -1), -6.0);
-        assert_eq!(
-            base_k_value(&HValue::P, -10.0, -4, -1),
-            -10.0 + (30.0 / 25.5)
-        );
-        assert_eq!(base_k_value(&HValue::T, -10.0, -4, -1), -10.0 - (1.0 / 3.0));
-
-        assert_eq!(base_k_value(&HValue::M, 12.25, 3, 10), 15.925);
-        assert_eq!(
-            base_k_value(&HValue::P, 12.25, 3, 10),
-            12.25 + (-85.75 / 25.5)
-        );
-        assert_eq!(
-            base_k_value(&HValue::T, 12.25, 3, 10),
-            12.25 - (12.25 / 3.0)
-        );
     }
 
     #[test]
@@ -132,10 +114,6 @@ mod tests {
         assert_eq!(custom_1_k_value(&HValue::M, -10.0, -4, -1), None);
         assert_eq!(custom_1_k_value(&HValue::P, -10.0, -4, -1), Some(-19.6));
         assert_eq!(custom_1_k_value(&HValue::T, -10.0, -4, -1), None);
-
-        assert_eq!(custom_1_k_value(&HValue::M, 12.25, 3, 10), None);
-        assert_eq!(custom_1_k_value(&HValue::P, 12.25, 3, 10), Some(24.8675));
-        assert_eq!(custom_1_k_value(&HValue::T, 12.25, 3, 10), None);
     }
 
     #[test]
@@ -164,10 +142,6 @@ mod tests {
         assert_eq!(custom_2_k_value(&HValue::M, -10.0, -4, -1), Some(-10.6));
         assert_eq!(custom_2_k_value(&HValue::P, -10.0, -4, -1), None);
         assert_eq!(custom_2_k_value(&HValue::T, -10.0, -4, -1), None);
-
-        assert_eq!(custom_2_k_value(&HValue::M, 12.25, 3, 10), Some(22.6175));
-        assert_eq!(custom_2_k_value(&HValue::P, 12.25, 3, 10), None);
-        assert_eq!(custom_2_k_value(&HValue::T, 12.25, 3, 10), None);
     }
 
     #[test]
@@ -188,7 +162,7 @@ mod tests {
             }),
             Ok(Output {
                 h: HValue::T,
-                k: 1.0 / 3.0 - (19.0 / 90.0)
+                k: d - (19.0 / 90.0)
             })
         );
         // H: Custom 2, K: Custom 2
@@ -203,7 +177,7 @@ mod tests {
             }),
             Ok(Output {
                 h: HValue::M,
-                k: 19.0 + 1.0 / 3.0 + 13.0 / 300.0
+                k: 19.0 + d + 13.0 / 300.0
             })
         );
         // H: Base, K: Custom 1
@@ -233,7 +207,7 @@ mod tests {
             }),
             Ok(Output {
                 h: HValue::T,
-                k: 1.0 / 3.0 - 19.0 / 90.0
+                k: d - 19.0 / 90.0
             })
         );
         // [Error]
